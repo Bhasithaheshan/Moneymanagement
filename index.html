@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#CB2957">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Trade MM">
+<title>Option Trading Money Management</title>
+<link rel="manifest" href="./manifest.json" id="staticManifestLink">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" crossorigin="anonymous">
+<style>
+  :root{
+    --bg:#000000;
+    --panel:#111111;
+    --panel-2:#0A0A0A;
+    --panel-hover:#1A1A1A;
+    --line:#2C2C2C;
+    --line-soft:#1D1D1D;
+    --text:#EEEEEE;
+    --muted:#DDDDDD;
+    --muted-dim:#7A7A7A;
+    --profit:#2FD37D;
+    --profit-glow:rgba(47,211,125,0.20);
+    --profit-dim:#1B7A49;
+    --loss:#FF4D5E;
+    --loss-glow:rgba(255,77,94,0.20);
+    --loss-dim:#8A2530;
+    --gold:#CB2957;
+    --gold-glow:rgba(203,41,87,0.16);
+    --blue:#DDDDDD;
+    --brand-glow:rgba(203,41,87,0.35);
+    --mono:'JetBrains Mono', 'SF Mono', 'Courier New', monospace;
+    --sans:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --shadow-card:0 1px 2px rgba(0,0,0,0.6), 0 8px 24px -8px rgba(0,0,0,0.7);
+    --headline-start:#FFFFFF;
+    --headline-end:#DDDDDD;
+    --glow-1:rgba(203,41,87,0.14);
+    --glow-2:rgba(203,41,87,0.08);
+    --glow-3:rgba(221,221,221,0.03);
+    --btn-text:#FFFFFF;
+    --header-bg:rgba(0,0,0,0.82);
+  }
+
+  html[data-theme="light"]{
+    --bg:#F6F6F7;
+    --panel:#FFFFFF;
+    --panel-2:#F0F0F2;
+    --panel-hover:#EAEAEC;
+    --line:#DCDCDE;
+    --line-soft:#E7E7E9;
+    --text:#141414;
+    --muted:#555555;
+    --muted-dim:#8A8A8A;
+    --profit:#1B9E5A;
+    --profit-glow:rgba(27,158,90,0.14);
+    --profit-dim:#8F1F3F;
+    --loss:#D63446;
+    --loss-glow:rgba(214,52,70,0.14);
+    --loss-dim:#C9A8B4;
+    --gold:#CB2957;
+    --gold-glow:rgba(203,41,87,0.10);
+    --blue:#555555;
+    --brand-glow:rgba(203,41,87,0.25);
+    --shadow-card:0 1px 2px rgba(20,20,20,0.06), 0 8px 24px -8px rgba(20,20,20,0.12);
+    --headline-start:#141414;
+    --headline-end:#4A4A4A;
+    --glow-1:rgba(203,41,87,0.08);
+    --glow-2:rgba(203,41,87,0.05);
+    --glow-3:rgba(20,20,20,0.02);
+    --btn-text:#FFFFFF;
+    --header-bg:rgba(246,246,247,0.82);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:
+      radial-gradient(circle at 12% -5%, var(--glow-1), transparent 42%),
+      radial-gradient(circle at 88% 5%, var(--glow-2), transparent 42%),
+      radial-gradient(circle at 50% 100%, var(--glow-3), transparent 50%),
+      var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    padding:40px 24px 90px;
+    line-height:1.5;
+    transition:background-color .3s ease, color .3s ease;
+  }
+  .wrap{max-width:1080px; margin:0 auto;}
+
+  /* HEADER */
+  .header-bar{
+    position:sticky; top:0; z-index:20;
+    background:var(--header-bg);
+    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    margin:-40px -24px 28px; padding:20px 24px;
+    border-bottom:1px solid var(--line-soft);
+  }
+  header{
+    max-width:1080px; margin:0 auto;
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap:wrap; gap:18px;
+  }
+  .brand-group{display:flex; align-items:center; gap:14px;}
+  .brand-badge{
+    width:46px; height:46px; border-radius:13px; flex-shrink:0;
+    background:linear-gradient(160deg, var(--gold), #E14C77);
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px; box-shadow:0 4px 16px -2px var(--brand-glow);
+  }
+  .brand-eyebrow{
+    font-family:var(--mono); font-size:10.5px; letter-spacing:3px;
+    color:var(--gold); text-transform:uppercase; margin-bottom:4px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .brand-eyebrow::before{
+    content:''; width:6px; height:6px; border-radius:50%;
+    background:var(--gold); box-shadow:0 0 8px var(--gold);
+    display:inline-block;
+  }
+  h1{
+    font-size:26px; font-weight:800; letter-spacing:-0.6px; line-height:1.1;
+    background:linear-gradient(180deg, var(--headline-start) 0%, var(--headline-end) 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .tagline{display:none;}
+  .header-right{display:flex; align-items:center; gap:14px;}
+  .theme-toggle{
+    width:42px; height:42px; border-radius:12px;
+    background:var(--panel-2); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; font-size:17px; flex-shrink:0;
+    transition:border-color .15s, transform .15s;
+  }
+  .theme-toggle:hover{border-color:var(--gold); transform:translateY(-1px);}
+  .ticker{
+    font-family:var(--mono); font-size:10.5px; color:var(--muted-dim);
+    text-align:right; letter-spacing:1.5px; text-transform:uppercase;
+    background:var(--panel); border:1px solid var(--line-soft);
+    border-radius:14px; padding:10px 20px;
+    box-shadow:var(--shadow-card);
+  }
+  .ticker span{
+    display:block; color:var(--profit); font-weight:700; font-size:24px;
+    letter-spacing:-0.5px; margin-top:2px; text-shadow:0 0 20px var(--profit-glow);
+  }
+
+  .page-tagline{
+    color:var(--muted); font-size:14.5px; margin-bottom:28px; font-weight:400;
+    max-width:640px;
+  }
+
+  /* PANEL */
+  .panel{
+    background:linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+    border:1px solid var(--line-soft);
+    border-radius:18px; padding:26px 28px; margin-bottom:22px;
+    box-shadow:var(--shadow-card);
+  }
+  .panel-title{
+    font-size:11.5px; letter-spacing:2.2px; text-transform:uppercase;
+    color:var(--muted); margin-bottom:20px; font-family:var(--mono);
+    font-weight:600; display:flex; align-items:center; gap:10px;
+  }
+  .panel-title::after{
+    content:''; flex:1; height:1px;
+    background:linear-gradient(90deg, var(--line), transparent);
+  }
+  .controls{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:18px; align-items:end;
+  }
+  .field label{
+    display:block; font-size:11.5px; color:var(--muted); margin-bottom:8px;
+    letter-spacing:.3px; font-weight:500;
+  }
+  .field input{
+    width:100%; background:var(--panel-2); border:1.5px solid var(--line);
+    color:var(--text); font-family:var(--mono); font-size:17px; font-weight:700;
+    padding:14px 16px; border-radius:11px; outline:none;
+    transition:border-color .15s, box-shadow .15s, transform .1s;
+  }
+  .field input:focus{border-color:var(--gold); box-shadow:0 0 0 3px var(--gold-glow); transform:translateY(-1px);}
+  .field input[type="date"]{color-scheme:dark;}
+  html[data-theme="light"] .field input[type="date"]{color-scheme:light;}
+  .btn{
+    background:linear-gradient(135deg, #E14C77, var(--gold));
+    color:var(--btn-text); border:none;
+    font-weight:700; font-size:14.5px; padding:15px 26px;
+    border-radius:12px; cursor:pointer; letter-spacing:.2px;
+    position:relative; overflow:hidden;
+    transition:transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .3s ease;
+  }
+  .btn::before{
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(135deg, var(--gold), #F16B92 55%, #E14C77);
+    opacity:0; transition:opacity .35s ease;
+  }
+  .btn::after{
+    content:''; position:absolute; top:0; left:-60%; width:40%; height:100%;
+    background:linear-gradient(115deg, transparent, rgba(255,255,255,0.35), transparent);
+    transform:skewX(-20deg); transition:left .55s ease; z-index:1;
+  }
+  .btn span{position:relative; z-index:2;}
+  .btn:hover{
+    box-shadow:0 8px 32px -4px var(--brand-glow), 0 0 0 1px rgba(203,41,87,0.35);
+    transform:translateY(-2px) scale(1.03);
+  }
+  .btn:hover::before{opacity:1;}
+  .btn:hover::after{left:130%;}
+  .btn:active{transform:translateY(0) scale(0.98); box-shadow:0 2px 10px -2px var(--brand-glow);}
+
+  .action-row{
+    display:flex; flex-wrap:wrap; gap:10px;
+    margin-top:18px; padding-top:18px; border-top:1px solid var(--line-soft);
+  }
+  .btn-secondary{
+    background:var(--panel-2); color:var(--text); border:1px solid var(--line);
+    font-weight:600; font-size:13px; padding:10px 18px;
+    border-radius:10px; cursor:pointer; letter-spacing:.2px;
+    transition:border-color .15s, transform .15s, background .15s;
+  }
+  .btn-secondary:hover{border-color:var(--gold); transform:translateY(-1px); background:var(--panel-hover);}
+  .btn-secondary:active{transform:translateY(0);}
+  .btn-secondary.btn-danger{margin-left:auto; color:#FF7A8A; border-color:var(--loss-dim);}
+  .btn-secondary.btn-danger:hover{border-color:#FF4D5E; background:rgba(255,77,94,0.08);}
+
+  /* RULE CARDS */
+  .rules{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(215px,1fr));
+    gap:16px; margin-bottom:22px;
+  }
+  .rule-card{
+    background:linear-gradient(160deg, var(--panel) 0%, var(--panel-2) 100%);
+    border:1px solid var(--line-soft);
+    border-top:2px solid var(--gold);
+    border-radius:16px; padding:22px 20px 20px;
+    box-shadow:var(--shadow-card);
+    transition:transform .15s, border-color .15s;
+  }
+  .rule-card:hover{transform:translateY(-2px);}
+  .rule-card.loss{border-top-color:var(--loss);}
+  .rule-card.days{border-top-color:var(--profit);}
+  .rule-card.withdraw{border-top-color:var(--blue);}
+  .rule-card .icon{
+    font-size:18px; margin-bottom:14px; opacity:.95;
+    width:38px; height:38px; border-radius:11px;
+    background:var(--panel-2); border:1px solid var(--line-soft);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .rule-card .label{font-size:10.5px; color:var(--muted); letter-spacing:1.8px; text-transform:uppercase; margin-bottom:10px; font-weight:600;}
+  .rule-card .value{font-family:var(--mono); font-size:21px; font-weight:700; letter-spacing:-0.3px;}
+  .rule-card .sub{font-size:12.5px; color:var(--muted-dim); margin-top:8px;}
+
+  /* GROWTH PATH - signature element */
+  .growth-wrap{position:relative; padding-top:6px;}
+  #growthChart{width:100%; height:190px; display:block; cursor:crosshair;}
+  .growth-legend{display:flex; gap:24px; font-size:11.5px; color:var(--muted); margin-top:16px; font-family:var(--mono); letter-spacing:.3px;}
+  .growth-legend .dot{display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px;}
+
+  .growth-stats{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+    gap:12px; margin-bottom:22px;
+  }
+  .gstat{
+    background:var(--panel-2); border:1px solid var(--line-soft);
+    border-radius:14px; padding:16px 18px;
+  }
+  .gstat .gstat-label{font-size:10px; letter-spacing:1.4px; text-transform:uppercase; color:var(--muted-dim); font-weight:600; margin-bottom:8px;}
+  .gstat .gstat-val{font-family:var(--mono); font-size:19px; font-weight:700;}
+  .gstat .gstat-val.up{color:var(--profit);}
+  .gstat .gstat-val.down{color:var(--loss);}
+  .gstat .gstat-val.neutral{color:var(--text);}
+
+  .chart-tooltip{
+    position:absolute; pointer-events:none; opacity:0;
+    background:var(--panel-2); border:1px solid var(--line);
+    border-radius:12px; padding:10px 14px; font-family:var(--mono);
+    font-size:12px; color:var(--text); white-space:nowrap;
+    transform:translate(-50%,-115%); transition:opacity .1s;
+    box-shadow:0 8px 24px rgba(0,0,0,0.5); z-index:5;
+  }
+  .chart-tooltip .tt-day{color:var(--muted); font-size:10.5px; letter-spacing:.5px; margin-bottom:2px;}
+  .chart-tooltip .tt-val{font-weight:700; font-size:14px;}
+
+  .rate-section{margin-top:26px; padding-top:20px; border-top:1px solid var(--line-soft);}
+  .rate-label{font-size:11px; letter-spacing:1.6px; text-transform:uppercase; color:var(--muted); font-weight:600; margin-bottom:12px; font-family:var(--mono);}
+  #rateChart{width:100%; height:90px; display:block;}
+
+  /* TABLE */
+  .table-scroll{overflow-x:auto; overflow-y:auto; max-height:520px; margin:0 -4px; border-radius:12px;}
+  .table-scroll thead th{position:sticky; top:0; background:var(--panel); z-index:2;}
+  table{width:100%; border-collapse:collapse; font-family:var(--mono); font-size:13.5px; min-width:640px;}
+  thead th{
+    text-align:left; font-size:10.5px; color:var(--muted); letter-spacing:1.4px;
+    text-transform:uppercase; padding:0 14px 14px; border-bottom:1px solid var(--line);
+    font-weight:600;
+  }
+  tbody td{padding:16px 14px; border-bottom:1px solid var(--line-soft); font-weight:500;}
+  tbody tr{transition:background .12s;}
+  tbody tr:hover{background:var(--panel-hover);}
+  tbody tr.weekend td{color:var(--muted-dim); font-style:italic; padding:12px 14px;}
+  tbody tr.locked-row td{color:var(--muted-dim); font-style:italic;}
+  tbody tr.locked-row{opacity:.55;}
+  tbody td:first-child{font-family:var(--sans); font-weight:600; color:var(--text); font-size:14px;}
+  .date-sub{font-family:var(--mono); font-size:11px; color:var(--muted-dim); font-weight:500; margin-top:2px;}
+  .status-pill{
+    display:inline-flex; align-items:center; gap:6px;
+    padding:5px 12px; border-radius:20px; font-size:11px; font-weight:600;
+    cursor:pointer; user-select:none; border:1px solid var(--line);
+    background:var(--panel-2); color:var(--muted); transition:all .15s;
+    letter-spacing:.2px;
+  }
+  .status-pill:hover{border-color:var(--muted);}
+  .status-pill.hit{background:rgba(47,211,125,0.16); color:#2FD37D; border-color:#1B7A49;}
+  .status-pill.stop{background:rgba(255,77,94,0.16); color:#FF4D5E; border-color:#8A2530;}
+  .status-pill.locked{cursor:default; color:var(--muted-dim); background:transparent;}
+  .profit-txt{color:#2FD37D; font-weight:600;}
+  .loss-txt{color:#FF4D5E; font-weight:600;}
+
+  .withdraw-row td{
+    background:var(--gold-glow); font-weight:700; color:var(--gold);
+    border-top:1px solid var(--line); border-bottom:none;
+  }
+  .withdraw-row td:first-child{color:var(--gold);}
+
+  .end-edit{
+    width:100px; background:var(--panel-2); border:1px solid var(--line);
+    color:var(--text); font-family:var(--mono); font-size:13.5px; font-weight:600;
+    padding:7px 10px; border-radius:9px; outline:none;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  .end-edit:hover{border-color:var(--muted);}
+  .end-edit:focus{border-color:var(--gold); box-shadow:0 0 0 3px var(--gold-glow);}
+
+  .withdraw-edit{
+    width:100px; background:var(--panel-2); border:1.5px solid var(--gold);
+    color:var(--gold); font-family:var(--mono); font-size:13.5px; font-weight:700;
+    padding:7px 10px; border-radius:9px; outline:none;
+    transition:box-shadow .15s;
+  }
+  .withdraw-edit:focus{box-shadow:0 0 0 3px var(--gold-glow);}
+
+  .hint-text{
+    font-size:12.5px; color:var(--muted-dim); margin-bottom:18px; margin-top:-8px;
+    line-height:1.6;
+  }
+
+  .weekend-banner{
+    display:flex; align-items:center; gap:14px;
+    background:linear-gradient(160deg, var(--panel-2), var(--bg));
+    border:1px solid var(--loss-dim);
+    border-left:3px solid var(--gold);
+    border-radius:14px; padding:20px 22px; margin-bottom:20px;
+  }
+  .weekend-banner .wb-icon{font-size:22px;}
+  .weekend-banner .wb-title{font-weight:700; font-size:14.5px; color:var(--text); margin-bottom:4px;}
+  .weekend-banner .wb-sub{font-size:12.5px; color:var(--muted); font-family:var(--mono);}
+
+  footer{
+    text-align:center; color:var(--muted-dim); font-size:12px;
+    margin-top:44px; line-height:1.7; letter-spacing:.2px;
+  }
+
+  /* ===== MOBILE RESPONSIVENESS ===== */
+  @media (max-width: 640px){
+    body{ padding:24px 14px 60px; }
+    .header-bar{ margin:-24px -14px 22px; padding:14px 14px; }
+    header{ gap:12px; }
+    .brand-group{ gap:10px; }
+    .brand-badge{ width:36px; height:36px; border-radius:10px; font-size:16px; }
+    .brand-eyebrow{ font-size:9px; letter-spacing:2px; }
+    h1{ font-size:19px; }
+    .header-right{ gap:8px; }
+    .theme-toggle{ width:36px; height:36px; font-size:15px; }
+    .ticker{ padding:8px 12px; font-size:9px; }
+    .ticker span{ font-size:18px; }
+    .page-tagline{ font-size:13px; margin-bottom:20px; }
+
+    .panel{ padding:18px 16px; border-radius:14px; margin-bottom:16px; }
+    .panel-title{ font-size:10.5px; margin-bottom:16px; }
+
+    .controls{ grid-template-columns:1fr 1fr; gap:12px; }
+    .controls .field:first-child{ grid-column:1 / -1; } /* date picker gets full width */
+    .btn{ grid-column:1 / -1; width:100%; text-align:center; padding:14px 20px; }
+    .field input{ font-size:15px; padding:12px 13px; }
+
+    .action-row{ gap:8px; }
+    .btn-secondary{ flex:1 1 calc(50% - 8px); text-align:center; font-size:12px; padding:10px 12px; }
+    .btn-secondary.btn-danger{ margin-left:0; flex-basis:100%; }
+
+    .rules{ grid-template-columns:1fr 1fr; gap:10px; }
+    .rule-card{ padding:16px 14px 14px; border-radius:13px; }
+    .rule-card .icon{ width:32px; height:32px; font-size:15px; margin-bottom:10px; }
+    .rule-card .value{ font-size:17px; }
+    .rule-card .sub{ font-size:11px; }
+
+    .growth-stats{ grid-template-columns:1fr 1fr; gap:8px; }
+    .gstat{ padding:12px 13px; }
+    .gstat .gstat-val{ font-size:16px; }
+
+    #growthChart{ height:150px; }
+    #rateChart{ height:75px; }
+    .growth-legend{ gap:12px; font-size:10px; flex-wrap:wrap; }
+
+    .rate-section{ margin-top:20px; padding-top:16px; }
+
+    table{ font-size:11.5px; min-width:560px; }
+    thead th{ padding:0 8px 10px; font-size:9.5px; }
+    tbody td{ padding:11px 8px; }
+    tbody td:first-child{ font-size:12.5px; }
+    .date-sub{ font-size:9.5px; }
+    .end-edit, .withdraw-edit{ width:74px; font-size:11.5px; padding:6px 7px; }
+    .status-pill{ font-size:10px; padding:4px 8px; }
+
+    .weekend-banner{ padding:14px 16px; gap:10px; }
+    .weekend-banner .wb-title{ font-size:13px; }
+    .weekend-banner .wb-sub{ font-size:11px; }
+
+    .hint-text{ font-size:11px; }
+  }
+
+  @media (max-width: 400px){
+    .controls{ grid-template-columns:1fr; }
+    .controls .field:first-child{ grid-column:auto; }
+    .rules{ grid-template-columns:1fr; }
+    .growth-stats{ grid-template-columns:1fr 1fr; }
+    h1{ font-size:17px; }
+    .ticker{ padding:6px 10px; }
+    .ticker span{ font-size:16px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header-bar">
+  <header>
+    <div class="brand-group">
+      <div class="brand-badge">💹</div>
+      <div>
+        <div class="brand-eyebrow">Option Trading Discipline</div>
+        <h1>Money Management</h1>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle light/dark mode">
+        <span id="themeIcon">☀️</span>
+      </button>
+      <div class="ticker">
+        Current Capital
+        <span id="tickerVal">$0.00</span>
+      </div>
+    </div>
+  </header>
+  </div>
+
+  <div class="page-tagline">Fixed daily targets. Hard stop losses. Disciplined weekly withdrawals.</div>
+
+  <!-- CONTROL PANEL -->
+  <div class="panel">
+    <div class="panel-title">Configuration</div>
+    <div class="controls">
+      <div class="field">
+        <label>Week Starting</label>
+        <input type="date" id="weekDate">
+      </div>
+      <div class="field">
+        <label>Starting Capital ($)</label>
+        <input type="number" id="capital" value="10" step="0.01" min="0">
+      </div>
+      <div class="field">
+        <label>Daily Target (%)</label>
+        <input type="number" id="targetPct" value="20" step="0.1" min="0">
+      </div>
+      <div class="field">
+        <label>Daily Stop Loss (%)</label>
+        <input type="number" id="stopPct" value="30" step="0.1" min="0">
+      </div>
+      <div class="field">
+        <label>Weekly Withdraw (%)</label>
+        <input type="number" id="withdrawPct" value="30" step="0.1" min="0">
+      </div>
+      <button class="btn" onclick="calculate()"><span>Calculate Week</span></button>
+    </div>
+
+    <div class="action-row">
+      <button class="btn-secondary" id="installBtn" onclick="installApp()" style="display:none;"><span>📲 Install App</span></button>
+      <button class="btn-secondary" onclick="exportAsImage()"><span>📷 Image</span></button>
+      <button class="btn-secondary" onclick="exportAsPDF()"><span>📄 PDF</span></button>
+      <button class="btn-secondary" onclick="exportAsExcel()"><span>📊 Excel</span></button>
+      <button class="btn-secondary btn-danger" onclick="resetAll()"><span>🔄 Reset</span></button>
+    </div>
+  </div>
+
+  <!-- RULE SUMMARY CARDS -->
+  <div class="rules">
+    <div class="rule-card">
+      <span class="icon">🎯</span>
+      <div class="label">Daily Target</div>
+      <div class="value" id="ruleTarget">Capital × 25%</div>
+      <div class="sub">Stop for the day once hit</div>
+    </div>
+    <div class="rule-card loss">
+      <span class="icon">🛑</span>
+      <div class="label">Daily Stop Loss</div>
+      <div class="value" id="ruleStop">Capital × 50%</div>
+      <div class="sub">Close terminal for the day</div>
+    </div>
+    <div class="rule-card days">
+      <span class="icon">📅</span>
+      <div class="label">Trading Days</div>
+      <div class="value">Mon – Fri</div>
+      <div class="sub">No trade: Saturday, Sunday</div>
+    </div>
+    <div class="rule-card withdraw">
+      <span class="icon">💰</span>
+      <div class="label">Weekly Withdraw</div>
+      <div class="value" id="ruleWithdraw">30% of Friday close</div>
+      <div class="sub">Keep 70% compounding</div>
+    </div>
+  </div>
+
+  <!-- GROWTH VISUAL -->
+  <div class="panel">
+    <div class="panel-title">Weekly Growth Rate</div>
+
+    <div class="growth-stats" id="growthStats"></div>
+
+    <div class="growth-wrap">
+      <svg id="growthChart" viewBox="0 0 900 190" preserveAspectRatio="none"></svg>
+      <div class="chart-tooltip" id="chartTooltip"></div>
+    </div>
+    <div class="growth-legend">
+      <span><span class="dot" style="background:var(--profit)"></span>Actual capital</span>
+      <span><span class="dot" style="background:var(--muted-dim)"></span>Projected (target-hit)</span>
+      <span><span class="dot" style="background:var(--gold)"></span>Latest point</span>
+    </div>
+
+    <div class="rate-section">
+      <div class="rate-label">Daily growth rate</div>
+      <svg id="rateChart" viewBox="0 0 900 90" preserveAspectRatio="none"></svg>
+    </div>
+  </div>
+
+  <!-- WEEKLY TABLE -->
+  <div class="panel">
+    <div class="panel-title">Compounding Schedule</div>
+    <div class="hint-text">Mark a day, then edit its End Capital if your actual trade result was different from the target/stop level — the next day always starts from that real number. The schedule runs a full month forward from your selected date. Every resolved Friday shows a suggested withdrawal (your set %) that you can edit — set it to 0 to skip withdrawing that week and carry the full amount into Monday.</div>
+
+    <div class="weekend-banner" id="weekendBanner" style="display:none;"></div>
+
+    <div id="scheduleTableWrap">
+    <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Day</th>
+          <th>Start Capital</th>
+          <th>Target Profit</th>
+          <th>Stop Loss Level</th>
+          <th>End Capital</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    </div>
+    </div>
+  </div>
+
+  <footer>
+    For personal trading discipline tracking only. Not financial advice.<br>
+    Progress is saved locally in this browser.
+  </footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const STORAGE_KEY = "optionMmStatus";
+const WITHDRAW_KEY = "optionMmWithdrawals";
+let lastRows = [];
+let lastMeta = {};
+
+function loadStatus(){
+  try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+  catch(e){ return {}; }
+}
+function saveStatus(status){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(status));
+}
+function loadWithdrawals(){
+  try{ return JSON.parse(localStorage.getItem(WITHDRAW_KEY)) || {}; }
+  catch(e){ return {}; }
+}
+function saveWithdrawals(w){
+  localStorage.setItem(WITHDRAW_KEY, JSON.stringify(w));
+}
+function getDayData(status, day){
+  const v = status[day];
+  if(!v) return {result:"pending", actual:null};
+  if(typeof v === "string") return {result:v, actual:null}; // legacy format
+  return {result: v.result || "pending", actual: (v.actual === undefined ? null : v.actual)};
+}
+
+function cssVar(name){
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+function fmt(n){
+  return "$" + n.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function parseDateInput(dateStr){
+  if(dateStr){
+    const [y,m,day] = dateStr.split('-').map(Number);
+    return new Date(y, m-1, day);
+  }
+  const t = new Date();
+  t.setHours(0,0,0,0);
+  return t;
+}
+
+function formatDateShort(d){
+  return d.toLocaleDateString(undefined, { month:'short', day:'numeric' });
+}
+function formatDateLong(d){
+  return d.toLocaleDateString(undefined, { weekday:'long', month:'long', day:'numeric' });
+}
+function dateKey(d){
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+
+const WEEKDAY_NAMES = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+function calculate(){
+  const capital = parseFloat(document.getElementById('capital').value) || 0;
+  const targetPct = parseFloat(document.getElementById('targetPct').value) || 0;
+  const stopPct = parseFloat(document.getElementById('stopPct').value) || 0;
+  const withdrawPct = parseFloat(document.getElementById('withdrawPct').value) || 0;
+  const weekDateInput = document.getElementById('weekDate');
+  const selectedDate = parseDateInput(weekDateInput.value);
+  const dow = selectedDate.getDay(); // 0 = Sunday ... 6 = Saturday
+
+  document.getElementById('ruleTarget').textContent = `Capital × ${targetPct}%`;
+  document.getElementById('ruleStop').textContent = `Capital × ${stopPct}%`;
+  document.getElementById('ruleWithdraw').textContent = `${withdrawPct}% every Friday`;
+
+  const banner = document.getElementById('weekendBanner');
+  const tableWrap = document.getElementById('scheduleTableWrap');
+
+  // Saturday or Sunday selected -> no trading today, point to next Monday
+  if(dow === 0 || dow === 6){
+    const addDays = dow === 0 ? 1 : 2;
+    const nextMonday = new Date(selectedDate);
+    nextMonday.setDate(selectedDate.getDate() + addDays);
+    banner.style.display = "flex";
+    banner.innerHTML = `
+      <div class="wb-icon">😴</div>
+      <div>
+        <div class="wb-title">${WEEKDAY_NAMES[dow]} — no trading today</div>
+        <div class="wb-sub">Trading resumes Monday, ${formatDateLong(nextMonday)}. Pick that date above to start your month.</div>
+      </div>
+    `;
+    tableWrap.style.display = "none";
+    document.getElementById('tickerVal').textContent = fmt(capital);
+    computeGrowthStats([], capital, targetPct);
+    drawGrowth([], capital, targetPct, withdrawPct);
+    return;
+  }
+
+  banner.style.display = "none";
+  tableWrap.style.display = "block";
+
+  // Build every calendar day from the selected date forward for one full month
+  const endDate = new Date(selectedDate);
+  endDate.setMonth(endDate.getMonth() + 1);
+  const dayEntries = [];
+  let cursor = new Date(selectedDate);
+  while(cursor < endDate){
+    dayEntries.push(new Date(cursor));
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  const status = loadStatus();
+  const withdrawals = loadWithdrawals();
+  let running = capital;
+  const rows = [];
+  let chainOpen = true; // whether we're still allowed to reveal the next trading day
+
+  dayEntries.forEach(date=>{
+    const d = date.getDay();
+    const dateLabel = formatDateShort(date);
+
+    if(d === 0 || d === 6){
+      rows.push({day: WEEKDAY_NAMES[d], dateLabel, weekend:true});
+      return;
+    }
+
+    const dayName = WEEKDAY_NAMES[d];
+    const key = dateKey(date);
+
+    if(!chainOpen){
+      rows.push({day:dayName, dateLabel, locked:true});
+      return;
+    }
+
+    const start = running;
+    const targetProfit = start * (targetPct/100);
+    const stopLevel = start - (start * (stopPct/100));
+    const dayData = getDayData(status, key);
+    const dayStatus = dayData.result;
+
+    let end = null;
+    let isEditable = false;
+    if(dayStatus === "hit"){
+      const computed = start + targetProfit;
+      end = (dayData.actual !== null && !isNaN(dayData.actual)) ? dayData.actual : computed;
+      running = end;
+      chainOpen = true;
+      isEditable = true;
+    } else if(dayStatus === "stop"){
+      const computed = stopLevel;
+      end = (dayData.actual !== null && !isNaN(dayData.actual)) ? dayData.actual : computed;
+      running = end;
+      chainOpen = true;
+      isEditable = true;
+    } else {
+      chainOpen = false; // still pending -> next day stays locked
+    }
+
+    rows.push({day:dayName, dateLabel, dateKey:key, start, targetProfit, stopLevel, end, status:dayStatus, editable:isEditable});
+
+    // Weekly withdrawal checkpoint on a resolved Friday — editable, defaults to the target % but can be set to 0 to skip
+    if(d === 5 && end !== null){
+      const defaultWithdraw = end * (withdrawPct/100);
+      const override = withdrawals[key];
+      const withdrawAmt = (override !== undefined && override !== null && !isNaN(override)) ? override : defaultWithdraw;
+      const remaining = end - withdrawAmt;
+      rows.push({withdrawRow:true, dateLabel, withdrawKey:key, fridayClose:end, withdrawAmt, remaining, withdrawPct});
+      running = remaining;
+    }
+  });
+
+  lastRows = rows;
+  lastMeta = {capital, targetPct, stopPct, withdrawPct};
+
+  const resolvedTradingRows = rows.filter(r => !r.weekend && !r.locked && !r.withdrawRow && r.end !== null && r.end !== undefined);
+  const lastResolved = resolvedTradingRows[resolvedTradingRows.length - 1];
+  const totalWithdrawn = rows.filter(r=>r.withdrawRow).reduce((a,r)=>a+r.withdrawAmt, 0);
+
+  document.getElementById('tickerVal').textContent = lastResolved ? fmt(lastResolved.end) : fmt(capital);
+
+  // render table
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = "";
+  rows.forEach(r=>{
+    const tr = document.createElement('tr');
+    if(r.withdrawRow){
+      tr.className = "withdraw-row";
+      tr.innerHTML = `
+        <td>Friday Close</td>
+        <td colspan="2">Withdraw amount (edit or set 0 to skip)</td>
+        <td>${fmt(r.fridayClose)}</td>
+        <td><input type="number" step="0.01" min="0" class="withdraw-edit" data-key="${r.withdrawKey}" value="${r.withdrawAmt.toFixed(2)}"></td>
+        <td>→ Monday: ${fmt(r.remaining)}</td>
+      `;
+      tbody.appendChild(tr);
+      return;
+    }
+    if(r.weekend){
+      tr.className = "weekend";
+      tr.innerHTML = `<td>${r.day}<div class="date-sub">${r.dateLabel}</div></td><td colspan="5">No trading</td>`;
+      tbody.appendChild(tr);
+      return;
+    }
+    if(r.locked){
+      tr.className = "locked-row";
+      tr.innerHTML = `
+        <td>${r.day}<div class="date-sub">${r.dateLabel}</div></td>
+        <td colspan="4">Mark the previous day's result to unlock</td>
+        <td><span class="status-pill locked">🔒 Locked</span></td>
+      `;
+      tbody.appendChild(tr);
+      return;
+    }
+    const st = r.status;
+    const endDisplay = r.editable
+      ? `<input type="number" step="0.01" class="end-edit" data-key="${r.dateKey}" value="${r.end.toFixed(2)}">`
+      : "—";
+    tr.innerHTML = `
+      <td>${r.day}<div class="date-sub">${r.dateLabel}</div></td>
+      <td>${fmt(r.start)}</td>
+      <td class="profit-txt">+${fmt(r.targetProfit)}</td>
+      <td class="loss-txt">${fmt(r.stopLevel)}</td>
+      <td>${endDisplay}</td>
+      <td><span class="status-pill ${st==='hit'?'hit':st==='stop'?'stop':''}" data-key="${r.dateKey}">${st==='hit'?'✓ Target Hit':st==='stop'?'✕ Stop Loss':'○ Pending'}</span></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // pill click handlers (only on unlocked, resolvable pills)
+  document.querySelectorAll('.status-pill[data-key]').forEach(pill=>{
+    pill.addEventListener('click', ()=>{
+      const key = pill.dataset.key;
+      const cur = getDayData(status, key).result;
+      const next = cur === "pending" ? "hit" : cur === "hit" ? "stop" : "pending";
+      // reset to the computed default whenever the result changes via the pill
+      status[key] = { result: next, actual: null };
+      saveStatus(status);
+      calculate();
+    });
+  });
+
+  // editable actual end-capital inputs (real trade result may differ from target/stop)
+  document.querySelectorAll('.end-edit').forEach(input=>{
+    input.addEventListener('click', (e)=> e.stopPropagation());
+    const commit = ()=>{
+      const key = input.dataset.key;
+      const val = parseFloat(input.value);
+      const dayData = getDayData(status, key);
+      status[key] = { result: dayData.result, actual: isNaN(val) ? null : val };
+      saveStatus(status);
+      calculate();
+    };
+    input.addEventListener('change', commit);
+    input.addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){ input.blur(); } });
+  });
+
+  // editable weekly withdrawal amounts (skip a withdrawal by setting it to 0)
+  document.querySelectorAll('.withdraw-edit').forEach(input=>{
+    input.addEventListener('click', (e)=> e.stopPropagation());
+    const commit = ()=>{
+      const key = input.dataset.key;
+      const val = parseFloat(input.value);
+      withdrawals[key] = isNaN(val) ? 0 : val;
+      saveWithdrawals(withdrawals);
+      calculate();
+    };
+    input.addEventListener('change', commit);
+    input.addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){ input.blur(); } });
+  });
+
+  drawGrowth(rows, capital, targetPct, withdrawPct);
+}
+
+function computeGrowthStats(rows, startCapital, targetPct){
+  const resolved = rows.filter(r=>!r.weekend && !r.locked && !r.withdrawRow && r.end !== null && r.end !== undefined);
+  const statsBox = document.getElementById('growthStats');
+
+  if(resolved.length === 0){
+    statsBox.innerHTML = `
+      <div class="gstat"><div class="gstat-label">Days Resolved</div><div class="gstat-val neutral">0</div></div>
+      <div class="gstat"><div class="gstat-label">Total Growth</div><div class="gstat-val neutral">—</div></div>
+      <div class="gstat"><div class="gstat-label">Avg Daily Rate</div><div class="gstat-val neutral">—</div></div>
+      <div class="gstat"><div class="gstat-label">Best Day</div><div class="gstat-val neutral">—</div></div>
+      <div class="gstat"><div class="gstat-label">vs Projected</div><div class="gstat-val neutral">—</div></div>
+      <div class="gstat"><div class="gstat-label">Compounding</div><div class="gstat-val neutral">1.00x</div></div>
+      <div class="gstat"><div class="gstat-label">Win Streak</div><div class="gstat-val neutral">—</div></div>
+      <div class="gstat"><div class="gstat-label">Max Drawdown</div><div class="gstat-val neutral">—</div></div>
+    `;
+    return;
+  }
+
+  const last = resolved[resolved.length - 1];
+  const totalGrowthPct = ((last.end - startCapital) / startCapital) * 100;
+  const dailyRates = resolved.map(r => ({day:r.day, pct: ((r.end - r.start) / r.start) * 100}));
+  const avgRate = dailyRates.reduce((a,b)=>a+b.pct,0) / dailyRates.length;
+  const best = dailyRates.reduce((a,b)=> b.pct > a.pct ? b : a);
+  const projected = startCapital * Math.pow(1 + targetPct/100, resolved.length);
+  const variance = last.end - projected;
+  const variancePct = (variance / projected) * 100;
+  const multiplier = last.end / startCapital;
+
+  // win streak: consecutive "hit" days counting back from the most recent resolved day
+  let streak = 0;
+  for(let i = resolved.length - 1; i >= 0; i--){
+    if(resolved[i].status === 'hit') streak++;
+    else break;
+  }
+  const streakLossActive = resolved[resolved.length-1].status === 'stop';
+
+  // max drawdown across the actual capital path (start + each resolved end)
+  const path = [startCapital, ...resolved.map(r=>r.end)];
+  let peak = path[0], maxDD = 0;
+  path.forEach(v=>{
+    if(v > peak) peak = v;
+    const dd = ((peak - v) / peak) * 100;
+    if(dd > maxDD) maxDD = dd;
+  });
+
+  statsBox.innerHTML = `
+    <div class="gstat"><div class="gstat-label">Days Resolved</div><div class="gstat-val neutral">${resolved.length}</div></div>
+    <div class="gstat"><div class="gstat-label">Total Growth</div><div class="gstat-val ${totalGrowthPct>=0?'up':'down'}">${totalGrowthPct>=0?'+':''}${totalGrowthPct.toFixed(1)}%</div></div>
+    <div class="gstat"><div class="gstat-label">Avg Daily Rate</div><div class="gstat-val ${avgRate>=0?'up':'down'}">${avgRate>=0?'+':''}${avgRate.toFixed(1)}%</div></div>
+    <div class="gstat"><div class="gstat-label">Best Day</div><div class="gstat-val up">${best.day.slice(0,3)} +${best.pct.toFixed(1)}%</div></div>
+    <div class="gstat"><div class="gstat-label">vs Projected</div><div class="gstat-val ${variance>=0?'up':'down'}">${variance>=0?'+':''}${variancePct.toFixed(1)}%</div></div>
+    <div class="gstat"><div class="gstat-label">Compounding</div><div class="gstat-val neutral">${multiplier.toFixed(2)}x</div></div>
+    <div class="gstat"><div class="gstat-label">Win Streak</div><div class="gstat-val ${streakLossActive?'down':(streak>0?'up':'neutral')}">${streakLossActive ? 'Broken' : streak + ' day' + (streak===1?'':'s')}</div></div>
+    <div class="gstat"><div class="gstat-label">Max Drawdown</div><div class="gstat-val ${maxDD>0?'down':'neutral'}">${maxDD>0?'-':''}${maxDD.toFixed(1)}%</div></div>
+  `;
+}
+
+function drawGrowth(rows, startCapital, targetPct, withdrawPct){
+  const svg = document.getElementById('growthChart');
+  const tooltip = document.getElementById('chartTooltip');
+  const tradingRows = rows.filter(r=>!r.weekend && !r.withdrawRow);
+  const w = 900, h = 190, pad = 30;
+
+  computeGrowthStats(rows, startCapital, targetPct);
+
+  const series = [{val:startCapital, day:"Start", dateLabel:"Start"}];
+  tradingRows.forEach(r=>{
+    if(!r.locked && r.end !== null && r.end !== undefined){
+      series.push({val:r.end, day:r.day, dateLabel:r.dateLabel});
+    }
+  });
+
+  const projectedSeries = [{val:startCapital, day:"Start"}];
+  let pr = startCapital;
+  tradingRows.forEach(r=>{
+    pr = pr * (1 + targetPct/100);
+    if(r.day === "Friday"){
+      pr = pr - pr * ((withdrawPct||0)/100);
+    }
+    projectedSeries.push({val:pr, day:r.day});
+  });
+
+  if(series.length < 2){
+    svg.innerHTML = `<text x="${w/2}" y="${h/2}" fill="${cssVar('--muted-dim')}" font-size="13" font-family="monospace" text-anchor="middle">Mark today's result to start the growth path</text>`;
+    return;
+  }
+
+  const allVals = [...series.map(p=>p.val), ...projectedSeries.map(p=>p.val)];
+  const max = Math.max(...allVals);
+  const min = Math.min(...allVals);
+  const range = (max - min) || 1;
+
+  const xFor = (i, len) => pad + (i/(len-1)) * (w - pad*2);
+  const yFor = (val) => h - pad - ((val - min)/range) * (h - pad*2);
+
+  const points = series.map((p,i)=>({ x:xFor(i, series.length), y:yFor(p.val), val:p.val, day:p.day, dateLabel:p.dateLabel }));
+  const projPoints = projectedSeries.slice(0, series.length).map((p,i)=>({ x:xFor(i, series.length), y:yFor(p.val), val:p.val, day:p.day }));
+
+  let path = `M ${points[0].x} ${points[0].y} `;
+  points.forEach(p=>{ path += `L ${p.x} ${p.y} `; });
+  let areaPath = path + `L ${points[points.length-1].x} ${h-pad} L ${points[0].x} ${h-pad} Z`;
+
+  let projPath = `M ${projPoints[0].x} ${projPoints[0].y} `;
+  projPoints.forEach(p=>{ projPath += `L ${p.x} ${p.y} `; });
+
+  let gridHTML = "";
+  for(let g=0; g<=3; g++){
+    const gy = pad + (g/3) * (h - pad*2);
+    const gv = max - (g/3) * range;
+    gridHTML += `<line x1="${pad}" y1="${gy}" x2="${w-pad}" y2="${gy}" stroke="${cssVar('--line-soft')}" stroke-width="1" stroke-dasharray="4 4"/>`;
+    gridHTML += `<text x="${pad-6}" y="${gy+3}" fill="${cssVar('--muted-dim')}" font-size="9.5" font-family="monospace" text-anchor="end">$${gv.toFixed(1)}</text>`;
+  }
+
+  let svgHTML = `
+    <defs>
+      <linearGradient id="fillGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${cssVar('--profit')}" stop-opacity="0.25"/>
+        <stop offset="100%" stop-color="${cssVar('--profit')}" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    ${gridHTML}
+    <path d="${projPath}" fill="none" stroke="${cssVar('--muted-dim')}" stroke-width="1.75" stroke-dasharray="5 5"/>
+    <path d="${areaPath}" fill="url(#fillGrad)" stroke="none"/>
+    <path id="mainPath" d="${path}" fill="none" stroke="${cssVar('--profit')}" stroke-width="2.5"/>
+  `;
+
+  projPoints.slice(1).forEach(p=>{
+    svgHTML += `<circle cx="${p.x}" cy="${p.y}" r="2.5" fill="${cssVar('--muted-dim')}" style="pointer-events:none;"/>`;
+  });
+
+  const labelStep = points.length > 12 ? Math.ceil(points.length / 12) : 1;
+  points.forEach((p,i)=>{
+    svgHTML += `<circle cx="${p.x}" cy="${p.y}" r="9" fill="transparent" data-day="${p.dateLabel}" data-val="${p.val}" class="hover-target"/>`;
+    svgHTML += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="${cssVar('--panel-2')}" stroke="${cssVar('--profit')}" stroke-width="2" style="pointer-events:none;"/>`;
+    if(i % labelStep === 0 || i === points.length-1){
+      svgHTML += `<text x="${p.x}" y="${h-6}" fill="${cssVar('--muted')}" font-size="10" font-family="monospace" text-anchor="middle" style="pointer-events:none;">${p.dateLabel}</text>`;
+    }
+  });
+
+  const last = points[points.length-1];
+  svgHTML += `<circle cx="${last.x}" cy="${last.y}" r="7" fill="none" stroke="${cssVar('--gold')}" stroke-width="2" style="pointer-events:none;"/>`;
+
+  svg.innerHTML = svgHTML;
+
+  // animate the actual capital line drawing in
+  const mainPath = document.getElementById('mainPath');
+  if(mainPath){
+    const len = mainPath.getTotalLength();
+    mainPath.style.strokeDasharray = len;
+    mainPath.style.strokeDashoffset = len;
+    mainPath.style.transition = 'none';
+    // force reflow then animate
+    mainPath.getBoundingClientRect();
+    requestAnimationFrame(()=>{
+      mainPath.style.transition = 'stroke-dashoffset 900ms cubic-bezier(.22,.61,.36,1)';
+      mainPath.style.strokeDashoffset = '0';
+    });
+  }
+
+  svg.querySelectorAll('.hover-target').forEach(el=>{
+    el.addEventListener('mouseenter', (e)=>{
+      const day = el.dataset.day;
+      const val = parseFloat(el.dataset.val);
+      const cx = parseFloat(el.getAttribute('cx'));
+      const cy = parseFloat(el.getAttribute('cy'));
+      const rect = svg.getBoundingClientRect();
+      const px = (cx / w) * rect.width;
+      const py = (cy / h) * rect.height;
+      tooltip.innerHTML = `<div class="tt-day">${day}</div><div class="tt-val">$${val.toFixed(2)}</div>`;
+      tooltip.style.left = px + "px";
+      tooltip.style.top = py + "px";
+      tooltip.style.opacity = "1";
+    });
+    el.addEventListener('mouseleave', ()=>{ tooltip.style.opacity = "0"; });
+  });
+
+  drawRateChart(tradingRows);
+}
+
+
+function drawRateChart(tradingRows){
+  const svg = document.getElementById('rateChart');
+  const w = 900, h = 90, pad = 24;
+
+  const resolved = tradingRows.filter(r=>!r.locked && r.end !== null && r.end !== undefined);
+  if(resolved.length === 0){
+    svg.innerHTML = `<text x="${w/2}" y="${h/2}" fill="${cssVar('--muted-dim')}" font-size="12" font-family="monospace" text-anchor="middle">No resolved days yet</text>`;
+    return;
+  }
+
+  const rates = tradingRows.map(r=>{
+    if(r.locked || r.end === null || r.end === undefined) return null;
+    return { day:r.day, pct: ((r.end - r.start)/r.start)*100, positive: r.status !== 'stop' };
+  });
+
+  const validRates = rates.filter(r=>r!==null).map(r=>r.pct);
+  const maxAbs = Math.max(...validRates.map(Math.abs), 1);
+  const slotW = (w - pad*2) / tradingRows.length;
+  const zeroY = h/2;
+
+  let svgHTML = `<line x1="${pad}" y1="${zeroY}" x2="${w-pad}" y2="${zeroY}" stroke="${cssVar('--line')}" stroke-width="1"/>`;
+
+  rates.forEach((r,i)=>{
+    const cx = pad + slotW*i + slotW/2;
+    if(r === null){
+      svgHTML += `<rect x="${cx-14}" y="${zeroY-2}" width="28" height="4" rx="2" fill="${cssVar('--line-soft')}"/>`;
+      svgHTML += `<text x="${cx}" y="${h-4}" fill="${cssVar('--muted-dim')}" font-size="9" font-family="monospace" text-anchor="middle">${(tradingRows[i].dateLabel||'').split(' ')[1]||''}</text>`;
+      return;
+    }
+    const barH = (Math.abs(r.pct) / maxAbs) * (h/2 - 14);
+    const color = r.positive ? cssVar('--profit') : cssVar('--loss');
+    const y = r.positive ? zeroY - barH : zeroY;
+    svgHTML += `<rect class="rate-bar" data-h="${barH}" data-y="${y}" data-zerofrom="${r.positive ? zeroY : zeroY}" x="${cx-14}" y="${zeroY}" width="28" height="0" rx="4" fill="${color}" opacity="0.85"/>`;
+    svgHTML += `<text x="${cx}" y="${r.positive ? y-6 : y+barH+14}" fill="${color}" font-size="10.5" font-family="monospace" font-weight="700" text-anchor="middle">${r.pct>=0?'+':''}${r.pct.toFixed(1)}%</text>`;
+    svgHTML += `<text x="${cx}" y="${h-4}" fill="${cssVar('--muted')}" font-size="9" font-family="monospace" text-anchor="middle">${(tradingRows[i].dateLabel||'').split(' ')[1]||''}</text>`;
+  });
+
+  svg.innerHTML = svgHTML;
+
+  // animate bars growing from the zero line
+  requestAnimationFrame(()=>{
+    svg.querySelectorAll('.rate-bar').forEach((bar,idx)=>{
+      const targetH = parseFloat(bar.dataset.h);
+      const targetY = parseFloat(bar.dataset.y);
+      bar.style.transition = `y 500ms ease ${idx*40}ms, height 500ms ease ${idx*40}ms`;
+      bar.setAttribute('y', targetY);
+      bar.setAttribute('height', targetH);
+    });
+  });
+}
+
+const THEME_KEY = "optionMmTheme";
+
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  document.getElementById('themeIcon').textContent = theme === 'light' ? '🌙' : '☀️';
+  localStorage.setItem(THEME_KEY, theme);
+}
+
+function toggleTheme(){
+  const current = document.documentElement.getAttribute('data-theme') || 'dark';
+  const next = current === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  calculate(); // redraw charts with theme-correct colors
+}
+
+function exportAsImage(){
+  if(typeof html2canvas === 'undefined'){
+    alert('Image export needs an internet connection to load its library. Please check your connection and try again.');
+    return;
+  }
+  const target = document.querySelector('.wrap');
+  html2canvas(target, { backgroundColor: cssVar('--bg') || '#000000', scale: 2, useCORS: true, allowTaint: true, logging: false }).then(canvas=>{
+    const link = document.createElement('a');
+    link.download = 'option-trading-money-management.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }).catch(err=>{
+    console.error('Image export failed:', err);
+    alert('Could not generate the image (' + (err && err.message ? err.message : 'unknown error') + '). This can happen if the page is embedded on a site (like Blogger) that blocks reading external fonts for image export — try again, or open this file directly instead of through the blog embed.');
+  });
+}
+
+function exportAsPDF(){
+  if(typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined'){
+    alert('PDF export needs an internet connection to load its library. Please check your connection and try again.');
+    return;
+  }
+  const { jsPDF } = window.jspdf;
+  const target = document.querySelector('.wrap');
+  html2canvas(target, { backgroundColor: cssVar('--bg') || '#000000', scale: 2, useCORS: true, allowTaint: true, logging: false }).then(canvas=>{
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF({ orientation: canvas.height > canvas.width ? 'portrait' : 'landscape', unit: 'px', format: [canvas.width, canvas.height] });
+    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+    pdf.save('option-trading-money-management.pdf');
+  }).catch(err=>{
+    console.error('PDF export failed:', err);
+    alert('Could not generate the PDF (' + (err && err.message ? err.message : 'unknown error') + '). This can happen if the page is embedded on a site (like Blogger) that blocks reading external fonts for PDF export — try again, or open this file directly instead of through the blog embed.');
+  });
+}
+
+function exportAsExcel(){
+  if(typeof XLSX === 'undefined'){
+    alert('Excel export needs an internet connection to load its library. Please check your connection and try again.');
+    return;
+  }
+  try{
+    const scheduleData = lastRows.filter(r=>!r.withdrawRow).map(r=>{
+      if(r.weekend){
+        return { Day: r.day, Date: r.dateLabel, 'Start Capital':'', 'Target Profit':'', 'Stop Loss Level':'', 'End Capital':'', Status:'No trading' };
+      }
+      if(r.locked){
+        return { Day: r.day, Date: r.dateLabel, 'Start Capital':'', 'Target Profit':'', 'Stop Loss Level':'', 'End Capital':'', Status:'Locked' };
+      }
+      return {
+        Day: r.day,
+        Date: r.dateLabel,
+        'Start Capital': +r.start.toFixed(2),
+        'Target Profit': +r.targetProfit.toFixed(2),
+        'Stop Loss Level': +r.stopLevel.toFixed(2),
+        'End Capital': (r.end !== null && r.end !== undefined) ? +r.end.toFixed(2) : '',
+        Status: r.status === 'hit' ? 'Target Hit' : r.status === 'stop' ? 'Stop Loss' : 'Pending'
+      };
+    });
+
+    const withdrawData = lastRows.filter(r=>r.withdrawRow).map(r=>({
+      'Friday Date': r.dateLabel,
+      'Friday Close': +r.fridayClose.toFixed(2),
+      'Withdraw Amount': +r.withdrawAmt.toFixed(2),
+      'Carried to Monday': +r.remaining.toFixed(2)
+    }));
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(scheduleData), 'Schedule');
+    if(withdrawData.length){
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(withdrawData), 'Withdrawals');
+    }
+    const settingsData = [{
+      'Starting Capital': lastMeta.capital,
+      'Daily Target %': lastMeta.targetPct,
+      'Daily Stop Loss %': lastMeta.stopPct,
+      'Weekly Withdraw %': lastMeta.withdrawPct
+    }];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(settingsData), 'Settings');
+
+    XLSX.writeFile(wb, 'option-trading-money-management.xlsx');
+  }catch(err){
+    console.error('Excel export failed:', err);
+    alert('Could not generate the Excel file (' + (err && err.message ? err.message : 'unknown error') + '). Please try again.');
+  }
+}
+
+function resetAll(){
+  const ok = confirm('Reset all trading data? This clears every marked day and withdrawal for good. This cannot be undone.');
+  if(!ok) return;
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(WITHDRAW_KEY);
+  calculate();
+}
+
+// init
+(function(){
+  const savedTheme = localStorage.getItem(THEME_KEY) || 'dark';
+  applyTheme(savedTheme);
+
+  const weekDateInput = document.getElementById('weekDate');
+  const today = new Date();
+  const iso = today.toISOString().slice(0,10);
+  weekDateInput.value = iso;
+  weekDateInput.addEventListener('change', calculate);
+})();
+calculate();
+
+// ===== PWA setup =====
+let deferredInstallPrompt = null;
+
+function generateIconDataURL(size){
+  const canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const grad = ctx.createLinearGradient(0,0,size,size);
+  grad.addColorStop(0, '#CB2957');
+  grad.addColorStop(1, '#E14C77');
+  const r = size * 0.22;
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.moveTo(r,0); ctx.arcTo(size,0,size,size,r); ctx.arcTo(size,size,0,size,r);
+  ctx.arcTo(0,size,0,0,r); ctx.arcTo(0,0,size,0,r); ctx.closePath();
+  ctx.fill();
+  ctx.font = `${Math.floor(size*0.56)}px sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('💹', size/2, size*0.56);
+  return canvas.toDataURL('image/png');
+}
+
+function setupPWA(){
+  // Prefer real static files (manifest.json, icon-*.png, service-worker.js) when this
+  // page is hosted alongside them (e.g. GitHub Pages) — needed for Android/TWA packaging.
+  // Falls back to a dynamically generated manifest+icon when only this single HTML file
+  // is hosted (e.g. embedded raw in a Blogger post).
+  fetch('./manifest.json', { method: 'HEAD' }).then(res=>{
+    if(!res.ok) throw new Error('no static manifest');
+    // static manifest.json exists — link is already in <head>, just set touch icons
+    const appleIcon = document.createElement('link');
+    appleIcon.rel = 'apple-touch-icon';
+    appleIcon.href = './icon-192.png';
+    document.head.appendChild(appleIcon);
+  }).catch(()=>{
+    // no static manifest reachable — build one dynamically from a generated icon
+    try{
+      document.getElementById('staticManifestLink').remove();
+      const icon192 = generateIconDataURL(192);
+      const icon512 = generateIconDataURL(512);
+
+      const appleIcon = document.createElement('link');
+      appleIcon.rel = 'apple-touch-icon';
+      appleIcon.href = icon192;
+      document.head.appendChild(appleIcon);
+
+      const favicon = document.createElement('link');
+      favicon.rel = 'icon';
+      favicon.href = icon192;
+      document.head.appendChild(favicon);
+
+      const manifest = {
+        name: "Option Trading Money Management",
+        short_name: "Trade MM",
+        description: "Daily target & stop-loss tracker with weekly compounding for disciplined trading.",
+        start_url: location.href.split('#')[0],
+        display: "standalone",
+        background_color: "#000000",
+        theme_color: "#CB2957",
+        icons: [
+          { src: icon192, sizes: "192x192", type: "image/png" },
+          { src: icon512, sizes: "512x512", type: "image/png" }
+        ]
+      };
+      const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+      const manifestURL = URL.createObjectURL(manifestBlob);
+      const manifestLink = document.createElement('link');
+      manifestLink.rel = 'manifest';
+      manifestLink.href = manifestURL;
+      document.head.appendChild(manifestLink);
+    }catch(err){
+      console.warn('PWA icon/manifest setup skipped:', err);
+    }
+  });
+
+  // Register the service worker if it's actually reachable (real static hosting only)
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('./service-worker.js').catch(()=>{
+      // silently ignore — expected when only this single HTML file is hosted
+    });
+  }
+}
+setupPWA();
+
+window.addEventListener('beforeinstallprompt', (e)=>{
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  const btn = document.getElementById('installBtn');
+  if(btn) btn.style.display = 'inline-flex';
+});
+
+window.addEventListener('appinstalled', ()=>{
+  const btn = document.getElementById('installBtn');
+  if(btn) btn.style.display = 'none';
+  deferredInstallPrompt = null;
+});
+
+function isIOS(){
+  return /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+function isStandalone(){
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
+async function installApp(){
+  if(deferredInstallPrompt){
+    deferredInstallPrompt.prompt();
+    const { outcome } = await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    const btn = document.getElementById('installBtn');
+    if(btn && outcome === 'accepted') btn.style.display = 'none';
+    return;
+  }
+  if(isIOS()){
+    alert('To install: tap the Share icon in Safari, then choose "Add to Home Screen".');
+  } else {
+    alert('Your browser doesn\'t support one-tap install here. Look for "Add to Home Screen" or "Install App" in your browser\'s menu.');
+  }
+}
+
+// Show the install button proactively on iOS (no beforeinstallprompt event exists there)
+if(isIOS() && !isStandalone()){
+  const btn = document.getElementById('installBtn');
+  if(btn) btn.style.display = 'inline-flex';
+}
+</script>
+</body>
+</html>
