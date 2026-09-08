@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#CB2957">
+<title>Pip Value Calculator — Forex Money Management</title>
+<meta name="description" content="Free forex pip value calculator. Find the exact dollar value of one pip for any currency pair and lot size.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" crossorigin="anonymous">
+<style>
+  :root{
+    --bg:#000000; --panel:#111111; --panel-2:#0A0A0A; --panel-hover:#1A1A1A;
+    --line:#2C2C2C; --line-soft:#1D1D1D; --text:#EEEEEE; --muted:#DDDDDD; --muted-dim:#7A7A7A;
+    --profit:#2FD37D; --profit-glow:rgba(47,211,125,0.20);
+    --loss:#FF4D5E; --loss-glow:rgba(255,77,94,0.20);
+    --gold:#CB2957; --gold-glow:rgba(203,41,87,0.16); --brand-glow:rgba(203,41,87,0.35);
+    --mono:'JetBrains Mono','SF Mono','Courier New',monospace;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    --shadow-card:0 1px 2px rgba(0,0,0,0.6), 0 8px 24px -8px rgba(0,0,0,0.7);
+    --header-bg:rgba(0,0,0,0.82);
+  }
+  html[data-theme="light"]{
+    --bg:#F6F6F7; --panel:#FFFFFF; --panel-2:#F0F0F2; --panel-hover:#EAEAEC;
+    --line:#DCDCDE; --line-soft:#E7E7E9; --text:#141414; --muted:#555555; --muted-dim:#8A8A8A;
+    --profit:#1B9E5A; --profit-glow:rgba(27,158,90,0.14);
+    --loss:#D63446; --loss-glow:rgba(214,52,70,0.14);
+    --gold:#CB2957; --gold-glow:rgba(203,41,87,0.10); --brand-glow:rgba(203,41,87,0.25);
+    --shadow-card:0 1px 2px rgba(20,20,20,0.06), 0 8px 24px -8px rgba(20,20,20,0.12);
+    --header-bg:rgba(246,246,247,0.82);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:
+      radial-gradient(circle at 12% -5%, rgba(203,41,87,0.14), transparent 42%),
+      radial-gradient(circle at 88% 5%, rgba(203,41,87,0.08), transparent 42%),
+      var(--bg);
+    color:var(--text); font-family:var(--sans); -webkit-font-smoothing:antialiased;
+    min-height:100vh; padding:40px 24px 90px; line-height:1.5;
+  }
+  .wrap{max-width:1080px; margin:0 auto;}
+
+  .header-bar{
+    position:sticky; top:0; z-index:20; background:var(--header-bg);
+    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    margin:-40px -24px 28px; padding:20px 24px; border-bottom:1px solid var(--line-soft);
+  }
+  header{ max-width:1080px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:18px; }
+  .brand-group{ display:flex; align-items:center; gap:14px; }
+  .brand-badge{ width:46px; height:46px; border-radius:13px; flex-shrink:0; background:linear-gradient(160deg, var(--gold), #E14C77); display:flex; align-items:center; justify-content:center; font-size:20px; box-shadow:0 4px 16px -2px var(--brand-glow); }
+  .brand-eyebrow{ font-family:var(--mono); font-size:10px; letter-spacing:2.5px; color:var(--gold); text-transform:uppercase; margin-bottom:4px; display:flex; align-items:center; gap:8px; }
+  .brand-eyebrow::before{ content:''; width:5px; height:5px; border-radius:50%; background:var(--gold); box-shadow:0 0 8px var(--gold); display:inline-block; }
+  h1{ font-size:22px; font-weight:800; letter-spacing:-0.4px; }
+  .theme-toggle{ width:40px; height:40px; border-radius:11px; background:var(--panel-2); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:16px; }
+  .theme-toggle:hover{ border-color:var(--gold); }
+
+  .breadcrumb{ font-size:12.5px; margin-bottom:18px; }
+  .breadcrumb a{ color:var(--muted-dim); text-decoration:none; } .breadcrumb a:hover{ color:var(--gold); }
+  .page-tagline{ color:var(--muted); font-size:14px; margin-bottom:26px; }
+
+  .panel{ background:linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%); border:1px solid var(--line-soft); border-radius:18px; padding:26px 24px; margin-bottom:20px; box-shadow:var(--shadow-card); }
+  .panel-title{ font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:18px; font-family:var(--mono); font-weight:600; display:flex; align-items:center; gap:10px; }
+  .panel-title::after{ content:''; flex:1; height:1px; background:linear-gradient(90deg, var(--line), transparent); }
+
+  .grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:16px; }
+  .field label{ display:block; font-size:11.5px; color:var(--muted); margin-bottom:8px; font-weight:500; }
+  .field input, .field select{
+    width:100%; background:var(--panel-2); border:1.5px solid var(--line); color:var(--text);
+    font-family:var(--mono); font-size:15px; font-weight:600; padding:12px 13px; border-radius:10px; outline:none;
+  }
+  .field input:focus, .field select:focus{ border-color:var(--gold); box-shadow:0 0 0 3px var(--gold-glow); }
+
+  .btn{
+    background:linear-gradient(135deg, #E14C77, var(--gold)); color:#FFFFFF; border:none; font-weight:700;
+    font-size:14.5px; padding:15px 26px; border-radius:12px; cursor:pointer; letter-spacing:.2px; width:100%; margin-top:18px;
+  }
+  .btn:hover{ box-shadow:0 8px 32px -4px var(--brand-glow); }
+
+  .result-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:14px; margin-top:20px; }
+  .result-card{ background:var(--panel-2); border:1px solid var(--line-soft); border-radius:14px; padding:18px; text-align:center; }
+  .result-card .label{ font-size:10px; letter-spacing:1.2px; text-transform:uppercase; color:var(--muted-dim); font-weight:600; margin-bottom:8px; }
+  .result-card .val{ font-family:var(--mono); font-size:22px; font-weight:700; }
+  .result-card.highlight{ border-color:var(--gold); background:var(--gold-glow); grid-column:1/-1; padding:24px; }
+  .result-card.highlight .val{ color:var(--gold); font-size:32px; }
+  .result-card.highlight .label{ font-size:11px; }
+
+  .lot-table{ width:100%; border-collapse:collapse; font-family:var(--mono); font-size:13px; margin-top:8px; }
+  .lot-table th{ text-align:left; font-size:10px; color:var(--muted-dim); text-transform:uppercase; letter-spacing:1px; padding:0 10px 10px; border-bottom:1px solid var(--line); }
+  .lot-table td{ padding:11px 10px; border-bottom:1px solid var(--line-soft); }
+  .lot-table tr:hover td{ background:var(--panel-hover); }
+
+  .hint-text{ font-size:12.5px; color:var(--muted-dim); margin-top:16px; line-height:1.6; }
+  .warn-box{ background:var(--loss-glow); border:1px solid var(--loss); border-radius:10px; padding:14px 16px; font-size:13px; color:var(--loss); margin-top:16px; display:none; }
+
+  footer{ text-align:center; color:var(--muted-dim); font-size:12px; margin-top:40px; line-height:1.7; }
+  .footer-links a{ color:var(--muted-dim); text-decoration:none; margin:0 6px; } .footer-links a:hover{ color:var(--gold); }
+
+  @media (max-width:640px){
+    body{ padding:24px 14px 60px; }
+    .header-bar{ margin:-24px -14px 22px; padding:14px; }
+    h1{ font-size:17px; } .brand-badge{ width:36px; height:36px; font-size:15px; }
+    .lot-table{ font-size:11px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header-bar">
+  <header>
+    <div class="brand-group">
+      <div class="brand-badge">💵</div>
+      <div>
+        <div class="brand-eyebrow">Forex Tools</div>
+        <h1>Pip Value Calculator</h1>
+      </div>
+    </div>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle light/dark mode"><span id="themeIcon">☀️</span></button>
+  </header>
+  </div>
+
+  <div class="breadcrumb"><a href="./forex.html">← Forex Calculators</a></div>
+  <div class="page-tagline">Find out exactly what one pip is worth in dollars for your pair and lot size — useful for sanity-checking any other calculator or a broker's numbers.</div>
+
+  <div class="panel">
+    <div class="panel-title">Pair & Lot Size</div>
+    <div class="grid">
+      <div class="field">
+        <label>Currency Pair</label>
+        <select id="pair" onchange="onPairChange()">
+          <option value="XAUUSD">XAU/USD (Gold)</option>
+          <option value="XAGUSD">XAG/USD (Silver)</option>
+          <option value="EURUSD">EUR/USD</option>
+          <option value="GBPUSD">GBP/USD</option>
+          <option value="AUDUSD">AUD/USD</option>
+          <option value="NZDUSD">NZD/USD</option>
+          <option value="USDCAD">USD/CAD</option>
+          <option value="USDCHF">USD/CHF</option>
+          <option value="USDJPY">USD/JPY</option>
+          <option value="EURJPY">EUR/JPY</option>
+          <option value="GBPJPY">GBP/JPY</option>
+          <option value="EURGBP">EUR/GBP</option>
+          <option value="CUSTOM">Custom / Other</option>
+        </select>
+      </div>
+      <div class="field"><label>Lot Size</label><input type="number" id="lotSize" value="1.00" step="0.01" min="0"></div>
+      <div class="field"><label>Pip Size</label><input type="number" id="pipSize" value="0.1" step="0.0001"></div>
+      <div class="field"><label>Pip Value / Standard Lot ($, approx.)</label><input type="number" id="pipValue" value="10" step="0.01"></div>
+    </div>
+
+    <button class="btn" onclick="calculate()">Calculate Pip Value</button>
+    <div class="hint-text">Pip value is an approximation for major pairs and can shift slightly with live exchange rates — adjust it manually if your broker shows a different number, especially for JPY, cross pairs, and metals (Gold/Silver pip and lot conventions vary noticeably between brokers, so double-check yours).</div>
+
+    <div class="result-grid" id="resultGrid" style="display:none;">
+      <div class="result-card highlight"><div class="label">Value of 1 Pip at This Lot Size</div><div class="val" id="rPipVal">$0.00</div></div>
+    </div>
+
+    <table class="lot-table" id="lotTable" style="display:none;">
+      <thead><tr><th>Lot Type</th><th>Size</th><th>Value / Pip</th></tr></thead>
+      <tbody id="lotTableBody"></tbody>
+    </table>
+  </div>
+
+  <footer>
+    For personal trading discipline tracking only. Not financial advice.
+    <div class="footer-links" style="margin-top:10px;">
+      <a href="./forex.html">Forex Tools</a>·
+      <a href="./index.html">All Modules</a>·
+      <a href="./blog.html">Blog</a>·
+      <a href="./disclaimer.html">Risk Disclaimer</a>
+    </div>
+  </footer>
+</div>
+
+<script>
+const THEME_KEY = "forexMmTheme";
+const PAIR_DEFAULTS = {
+  XAUUSD:{pipSize:0.1, pipValue:10}, XAGUSD:{pipSize:0.001, pipValue:5},
+  EURUSD:{pipSize:0.0001, pipValue:10}, GBPUSD:{pipSize:0.0001, pipValue:10},
+  AUDUSD:{pipSize:0.0001, pipValue:10}, NZDUSD:{pipSize:0.0001, pipValue:10},
+  USDCAD:{pipSize:0.0001, pipValue:7.4}, USDCHF:{pipSize:0.0001, pipValue:11.3},
+  USDJPY:{pipSize:0.01, pipValue:6.7}, EURJPY:{pipSize:0.01, pipValue:6.7},
+  GBPJPY:{pipSize:0.01, pipValue:6.7}, EURGBP:{pipSize:0.0001, pipValue:12.7},
+  CUSTOM:{pipSize:0.0001, pipValue:10}
+};
+
+function onPairChange(){
+  const def = PAIR_DEFAULTS[document.getElementById('pair').value] || PAIR_DEFAULTS.CUSTOM;
+  document.getElementById('pipSize').value = def.pipSize;
+  document.getElementById('pipValue').value = def.pipValue;
+}
+
+function fmt(n){ return "$" + Number(n).toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:4}); }
+
+function calculate(){
+  const lotSize = parseFloat(document.getElementById('lotSize').value) || 0;
+  const pipValuePerStdLot = parseFloat(document.getElementById('pipValue').value) || 10;
+
+  const pipValAtLot = lotSize * pipValuePerStdLot;
+
+  document.getElementById('resultGrid').style.display = 'grid';
+  document.getElementById('rPipVal').textContent = fmt(pipValAtLot);
+
+  const rows = [
+    { label: 'Standard Lot', size: 1.00 },
+    { label: 'Mini Lot', size: 0.10 },
+    { label: 'Micro Lot', size: 0.01 },
+    { label: 'Your Lot Size', size: lotSize }
+  ];
+  const tbody = document.getElementById('lotTableBody');
+  tbody.innerHTML = rows.map(r => `<tr><td>${r.label}</td><td>${r.size.toFixed(2)}</td><td>${fmt(r.size * pipValuePerStdLot)}</td></tr>`).join('');
+  document.getElementById('lotTable').style.display = 'table';
+}
+
+function applyTheme(t){ document.documentElement.setAttribute('data-theme', t); document.getElementById('themeIcon').textContent = t==='light'?'🌙':'☀️'; localStorage.setItem(THEME_KEY, t); }
+function toggleTheme(){ const c = document.documentElement.getAttribute('data-theme')||'dark'; applyTheme(c==='dark'?'light':'dark'); }
+
+(function(){
+  applyTheme(localStorage.getItem(THEME_KEY) || 'dark');
+  onPairChange();
+})();
+</script>
+</body>
+</html>
