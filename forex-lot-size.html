@@ -123,6 +123,8 @@
       <div class="field">
         <label>Currency Pair</label>
         <select id="pair" onchange="onPairChange()">
+          <option value="XAUUSD">XAU/USD (Gold)</option>
+          <option value="XAGUSD">XAG/USD (Silver)</option>
           <option value="EURUSD">EUR/USD</option>
           <option value="GBPUSD">GBP/USD</option>
           <option value="AUDUSD">AUD/USD</option>
@@ -148,7 +150,7 @@
 
     <button class="btn" onclick="calculate()">Calculate Lot Size</button>
     <div class="warn-box" id="warnBox"></div>
-    <div class="hint-text">Pip value is an approximation for major pairs and can shift slightly with live exchange rates — adjust it manually if your broker shows a different number, especially for JPY and cross pairs.</div>
+    <div class="hint-text">Pip value is an approximation for major pairs and can shift slightly with live exchange rates — adjust it manually if your broker shows a different number, especially for JPY, cross pairs, and metals (Gold/Silver pip and lot conventions vary noticeably between brokers, so double-check yours).</div>
 
     <div class="result-grid" id="resultGrid" style="display:none;">
       <div class="result-card highlight"><div class="label">Recommended Lot Size</div><div class="val" id="rLot">0.00</div></div>
@@ -177,6 +179,7 @@ const PAIR_DEFAULTS = {
   USDCAD:{pipSize:0.0001, pipValue:7.4}, USDCHF:{pipSize:0.0001, pipValue:11.3},
   USDJPY:{pipSize:0.01, pipValue:6.7}, EURJPY:{pipSize:0.01, pipValue:6.7},
   GBPJPY:{pipSize:0.01, pipValue:6.7}, EURGBP:{pipSize:0.0001, pipValue:12.7},
+  XAUUSD:{pipSize:0.1, pipValue:10}, XAGUSD:{pipSize:0.001, pipValue:5},
   CUSTOM:{pipSize:0.0001, pipValue:10}
 };
 
